@@ -11,7 +11,8 @@
     "firebase": "^10.8.0",
     "ethers": "^5.7.2",
     "@solana/web3.js": "1.87.6",
-    "@web3modal/standalone": "^2.0.0"
+    "@web3modal/standalone": "^2.0.0",
+    "rpc-websockets": "7.10.0"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
