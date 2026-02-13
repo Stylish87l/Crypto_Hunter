@@ -603,58 +603,82 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
-      <header className="px-6 py-4 bg-black border-b border-white/5 flex justify-between items-center z-10">
-        <div className="flex items-center gap-3">
-          <i className="fas fa-bolt text-emerald-500 text-2xl animate-pulse"></i>
-          <h1 className="font-black text-white uppercase text-lg tracking-wider">Agent Hunter <span className="text-emerald-500">Pro</span> v6.5</h1>
+      <header className="px-6 py-4 bg-gradient-to-r from-slate-950 via-emerald-950/20 to-slate-950 border-b border-white/10 flex justify-between items-center z-10 shadow-2xl relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-cyan-500/5 to-purple-500/5 animated-gradient-border opacity-30"></div>
+        
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/50">
+            <i className="fas fa-gem text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 className="font-black text-xl tracking-tighter bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+              CRYPTO AGENT PRO
+            </h1>
+            <p className="text-xs text-slate-500 font-medium">AI-Powered Token Intelligence</p>
+          </div>
         </div>
-        <div className="flex gap-4">
-          <button onClick={connectEVM} className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/50 px-6 py-2 rounded-lg text-xs uppercase font-black flex items-center gap-2 transition-all">
+        <div className="flex gap-3 relative z-10">
+          <button onClick={connectEVM} className="glass-card glow-on-hover bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/30 px-5 py-2.5 rounded-xl text-xs uppercase font-black flex items-center gap-2 transition-all">
             <i className="fas fa-wallet"></i> {evmAddress ? shortenAddress(evmAddress) : 'Connect EVM'}
           </button>
-          <button onClick={connectSolana} className="bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 border border-purple-500/50 px-6 py-2 rounded-lg text-xs uppercase font-black flex items-center gap-2 transition-all">
+          <button onClick={connectSolana} className="glass-card glow-on-hover bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 border border-purple-500/30 px-5 py-2.5 rounded-xl text-xs uppercase font-black flex items-center gap-2 transition-all">
             <i className="fas fa-ghost"></i> {solAddress ? shortenAddress(solAddress) : 'Connect SOL'}
           </button>
         </div>
       </header>
 
-      {/* Ticker */}
-      <div className="bg-[#020408] border-b border-white/5 py-2 overflow-hidden whitespace-nowrap flex">
-        <div className="animate-marquee inline-block">
-          {[...tickers, ...tickers].map((t, i) => (
-            <span key={i} className="mx-6 text-xs font-mono font-bold text-slate-400">
-              {t.symbol} <span className="text-white">${t.price}</span> <span className={t.change.includes('-') ? 'text-red-500' : 'text-green-500'}>({t.change})</span>
-            </span>
-          ))}
+      {/* Enhanced Ticker */}
+      <div className="bg-black/40 backdrop-blur-sm border-b border-white/5 py-3 overflow-hidden whitespace-nowrap flex relative">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center gap-2 bg-emerald-500/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-emerald-500/30">
+          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-500/50"></div>
+          <span className="text-xs font-bold text-emerald-400">LIVE MARKET</span>
+        </div>
+        <div className="animate-marquee inline-block ml-32">
+          {[...tickers, ...tickers].map((t, i) => {
+            const isPositive = !t.change.includes('-');
+            return (
+              <span key={i} className="ticker-item market-card inline-flex items-center gap-3 mx-3 bg-white/5 backdrop-blur-md px-5 py-2 rounded-lg border border-white/10 hover:border-emerald-500/30 transition-all">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${isPositive ? 'bg-emerald-500' : 'bg-rose-500'} shadow-lg`}></div>
+                  <span className="text-xs font-black text-white tracking-tight">{t.symbol}</span>
+                </div>
+                <span className="text-sm font-mono text-emerald-400 font-bold">${t.price}</span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${isPositive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+                  {isPositive ? '↑' : '↓'} {t.change}
+                </span>
+              </span>
+            );
+          })}
         </div>
       </div>
 
       <main className="flex-1 flex overflow-hidden">
         <section className="flex-1 overflow-y-auto p-6 space-y-8 min-w-0">
           <div className="max-w-4xl mx-auto">
-            <div className="flex bg-[#0d1421] border border-white/10 rounded-xl p-2 shadow-lg focus-within:border-emerald-500/50 transition-colors">
-              <i className="fas fa-search text-emerald-500 self-center ml-4"></i>
+            <div className="glass-card flex bg-[#0d1421]/60 backdrop-blur-xl border-2 border-white/10 rounded-2xl p-2 shadow-2xl focus-within:border-emerald-500/50 focus-within:shadow-emerald-500/20 transition-all glow-on-hover">
+              <i className="fas fa-search text-emerald-500 self-center ml-4 text-lg"></i>
               <input
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && performAnalysis()}
                 placeholder="PASTE TOKEN ADDRESS OR TICKER..."
-                className="bg-transparent flex-1 px-4 outline-none uppercase font-bold text-white placeholder-slate-600"
+                className="bg-transparent flex-1 px-4 py-2 outline-none uppercase font-bold text-white placeholder-slate-600"
               />
               <button
                 onClick={performAnalysis}
                 disabled={isAnalyzing}
-                className="bg-emerald-500 hover:bg-emerald-400 text-black font-black px-6 rounded-lg text-xs uppercase transition-colors"
+                className="btn-glow bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-black px-8 py-3 rounded-xl text-xs uppercase transition-all shadow-lg shadow-emerald-500/50 disabled:opacity-50"
               >
                 {isAnalyzing ? <i className="fas fa-spinner fa-spin"></i> : 'AUDIT'}
               </button>
             </div>
 
-            {/* Terminal */}
-            <div className="bg-black/80 border border-white/10 rounded-xl p-4 overflow-y-auto text-xs font-mono shadow-inner custom-scrollbar" style={{ height: '200px' }}>
+            {/* Enhanced Terminal */}
+            <div className="glass-card bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-y-auto text-xs font-mono shadow-2xl custom-scrollbar" style={{ height: '200px' }}>
               {terminalLines.map((l, i) => (
-                <div key={i} className={`mb-1 ${l.includes('ERROR') ? 'text-red-500' : l.includes('WHALE') ? 'text-amber-400' : l.includes('LAUNCH') ? 'text-purple-400' : 'text-emerald-500/80'}`}>
-                  <span className="opacity-50 mr-2">[{new Date().toLocaleTimeString()}]</span>
+                <div key={i} className={`terminal-line mb-1.5 ${l.includes('ERROR') ? 'text-red-400' : l.includes('WHALE') ? 'text-amber-400' : l.includes('LAUNCH') ? 'text-purple-400' : 'text-emerald-400/80'}`}>
+                  <span className="opacity-40 mr-2 text-slate-500">[{new Date().toLocaleTimeString()}]</span>
                   {l}
                 </div>
               ))}
@@ -701,47 +725,59 @@ function App() {
 
             {/* Verdict Modal */}
             {showVerdict && analysisResult && (
-              <section className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-                <div className="w-full max-w-4xl bg-[#0b121d] border border-emerald-500/30 rounded-2xl shadow-2xl overflow-hidden my-auto">
+              <section className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+                <div className="glass-verdict coin-slide w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[90vh] overflow-y-auto custom-scrollbar">
                   {/* Header */}
-                  <div className="p-6 border-b border-white/10 bg-black/30">
-                    <div className="flex justify-between items-start">
+                  <div className="p-8 border-b border-white/10 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-emerald-500/10 animated-gradient-border opacity-50"></div>
+                    <div className="flex justify-between items-start relative z-10">
                       <div>
-                        <span className="text-xs text-emerald-500 font-black uppercase tracking-widest">Forensic Verdict</span>
-                        <h2 className={`text-4xl font-black italic mt-2 ${analysisResult.riskLevel === 'LOW' ? 'text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'text-rose-500' : 'text-amber-400'}`}>
+                        <span className="text-xs text-emerald-400 font-black uppercase tracking-widest flex items-center gap-2">
+                          <i className="fas fa-shield-alt"></i> Forensic Verdict
+                        </span>
+                        <h2 className={`text-5xl font-black italic mt-3 ${analysisResult.riskLevel === 'LOW' ? 'text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'text-rose-500' : 'text-amber-400'}`}>
                           {analysisResult.verdict}
                         </h2>
-                        <p className="text-sm uppercase font-bold text-slate-400 mt-1">Risk: {analysisResult.riskLevel} • Confidence: {analysisResult.confidence}%</p>
+                        <p className="text-sm uppercase font-bold text-slate-400 mt-2 flex items-center gap-3">
+                          <span className={`px-3 py-1 rounded-lg ${analysisResult.riskLevel === 'LOW' ? 'bg-emerald-500/20 text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                            Risk: {analysisResult.riskLevel}
+                          </span>
+                          <span className="bg-white/5 px-3 py-1 rounded-lg">Confidence: {analysisResult.confidence}%</span>
+                        </p>
                       </div>
-                      <div className="text-right">
-                        <span className="text-xs text-slate-500 uppercase font-bold tracking-widest block">Social Vibe</span>
-                        <span className="text-lg font-black text-white">{analysisResult.socialSentiment?.vibe || 'Neutral'}</span>
+                      <div className="text-right glass-card bg-white/5 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                        <span className="text-xs text-slate-400 uppercase font-bold tracking-widest block">Social Vibe</span>
+                        <span className="text-2xl font-black text-white mt-1 block">{analysisResult.socialSentiment?.vibe || 'Neutral'}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Body */}
-                  <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                      <div className="bg-black/20 p-4 rounded-xl border border-white/5">
-                        <h3 className="text-xs font-black text-emerald-500 uppercase mb-3">Key Findings</h3>
-                        <ul className="space-y-2 text-sm">
+                      <div className="glass-card stat-item bg-black/30 backdrop-blur-md p-5 rounded-2xl border border-white/10 hover:border-emerald-500/30 transition-all">
+                        <h3 className="text-xs font-black text-emerald-400 uppercase mb-4 flex items-center gap-2">
+                          <i className="fas fa-check-circle"></i> Key Findings
+                        </h3>
+                        <ul className="space-y-3 text-sm">
                           {analysisResult.findings?.map((f, i) => (
-                            <li key={i} className="flex gap-2 text-slate-300">
+                            <li key={i} className="flex gap-3 text-slate-300">
                               <i className="fas fa-circle text-emerald-500 text-[6px] mt-2"></i>
-                              {f}
+                              <span>{f}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
                       {analysisResult.redFlags?.length > 0 && (
-                        <div className="bg-rose-900/20 p-4 rounded-xl border border-rose-500/30">
-                          <h3 className="text-xs font-black text-rose-500 uppercase mb-3">Red Flags</h3>
-                          <ul className="space-y-2 text-sm">
+                        <div className="glass-card stat-item bg-rose-900/10 backdrop-blur-md p-5 rounded-2xl border border-rose-500/30 hover:border-rose-500/50 transition-all">
+                          <h3 className="text-xs font-black text-rose-400 uppercase mb-4 flex items-center gap-2">
+                            <i className="fas fa-exclamation-triangle"></i> Red Flags
+                          </h3>
+                          <ul className="space-y-3 text-sm">
                             {analysisResult.redFlags.map((flag, i) => (
-                              <li key={i} className="flex gap-2 text-rose-300">
+                              <li key={i} className="flex gap-3 text-rose-300">
                                 <i className="fas fa-exclamation-triangle text-rose-500 text-xs mt-1"></i>
-                                {flag}
+                                <span>{flag}</span>
                               </li>
                             ))}
                           </ul>
@@ -750,17 +786,27 @@ function App() {
                     </div>
 
                     <div className="space-y-4">
-                      <div className="bg-black/20 p-4 rounded-xl border border-white/5">
-                        <h3 className="text-xs font-black text-slate-500 uppercase mb-3">Developer Profile</h3>
-                        <p className="text-sm text-slate-300">{analysisResult.devProfile?.history || 'No data'}</p>
-                        {analysisResult.devProfile?.reputation && <p className="text-xs text-slate-400 mt-2">Reputation: {analysisResult.devProfile.reputation}</p>}
+                      <div className="glass-card stat-item bg-black/30 backdrop-blur-md p-5 rounded-2xl border border-white/10 hover:border-cyan-500/30 transition-all">
+                        <h3 className="text-xs font-black text-cyan-400 uppercase mb-4 flex items-center gap-2">
+                          <i className="fas fa-user-shield"></i> Developer Profile
+                        </h3>
+                        <p className="text-sm text-slate-300 leading-relaxed">{analysisResult.devProfile?.history || 'No data'}</p>
+                        {analysisResult.devProfile?.reputation && <p className="text-xs text-slate-400 mt-3 bg-black/30 px-3 py-2 rounded-lg inline-block">Reputation: {analysisResult.devProfile.reputation}</p>}
                       </div>
                       {analysisResult.targets && (
-                        <div className="bg-black/20 p-4 rounded-xl border border-white/5">
-                          <h3 className="text-xs font-black text-slate-500 uppercase mb-3">Suggested Targets</h3>
-                          <div className="grid grid-cols-2 gap-4 text-lg font-black">
-                            <div className="text-emerald-400">Entry: {formatPrice(analysisResult.targets.entry)}</div>
-                            <div className="text-rose-400">Exit: {formatPrice(analysisResult.targets.exit)}</div>
+                        <div className="glass-card stat-item bg-gradient-to-br from-emerald-500/10 to-rose-500/10 backdrop-blur-md p-5 rounded-2xl border border-white/10 hover:border-white/20 transition-all">
+                          <h3 className="text-xs font-black text-slate-300 uppercase mb-4 flex items-center gap-2">
+                            <i className="fas fa-bullseye"></i> Suggested Targets
+                          </h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-emerald-500/10 backdrop-blur-sm p-4 rounded-xl border border-emerald-500/20">
+                              <div className="text-xs text-emerald-400 uppercase font-bold mb-1">Entry</div>
+                              <div className="text-xl font-black text-emerald-400">{formatPrice(analysisResult.targets.entry)}</div>
+                            </div>
+                            <div className="bg-rose-500/10 backdrop-blur-sm p-4 rounded-xl border border-rose-500/20">
+                              <div className="text-xs text-rose-400 uppercase font-bold mb-1">Exit</div>
+                              <div className="text-xl font-black text-rose-400">{formatPrice(analysisResult.targets.exit)}</div>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -768,22 +814,28 @@ function App() {
                   </div>
 
                   {/* Live Stats */}
-                  <div className="px-6 pb-6">
-                    <h3 className="text-xs font-black text-slate-500 uppercase mb-4">Live Market Stats</h3>
+                  <div className="px-8 pb-6">
+                    <h3 className="text-xs font-black text-slate-400 uppercase mb-5 flex items-center gap-2">
+                      <i className="fas fa-chart-line"></i> Live Market Stats
+                    </h3>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                       {[
-                        { label: 'Price', val: formatPrice(currentPrice) },
-                        { label: 'Liquidity', val: formatLiq(liquidity) },
-                        { label: 'MC/FDV', val: formatMC(marketCap) },
-                        { label: 'Holders', val: holders ?? '—' },
+                        { label: 'Price', val: formatPrice(currentPrice), icon: 'fa-dollar-sign' },
+                        { label: 'Liquidity', val: formatLiq(liquidity), icon: 'fa-water' },
+                        { label: 'MC/FDV', val: formatMC(marketCap), icon: 'fa-chart-pie' },
+                        { label: 'Holders', val: holders ?? '—', icon: 'fa-users' },
                         {
                           label: '5m Price Δ',
                           val: volumeChange5m ? `${volumeChange5m}%` : '—',
-                          color: volumeChange5m > 0 ? 'text-green-500' : volumeChange5m < 0 ? 'text-red-500' : 'text-white'
+                          color: volumeChange5m > 0 ? 'text-emerald-500' : volumeChange5m < 0 ? 'text-rose-500' : 'text-white',
+                          icon: 'fa-arrow-trend-up'
                         }
                       ].map((stat, i) => (
-                        <div key={i} className="bg-black/30 p-3 rounded-lg border border-white/5 text-center">
-                          <div className="text-xs text-slate-500 uppercase">{stat.label}</div>
+                        <div key={i} className="glass-card stat-item price-updated bg-black/30 backdrop-blur-md p-4 rounded-xl border border-white/10 hover:border-emerald-500/30 text-center transition-all">
+                          <div className="text-xs text-slate-400 uppercase flex items-center justify-center gap-2 mb-2">
+                            <i className={`fas ${stat.icon} text-emerald-500/50`}></i>
+                            {stat.label}
+                          </div>
                           <div className={`text-lg font-black truncate ${stat.color || 'text-white'}`}>
                             {stat.val}
                           </div>
@@ -793,15 +845,28 @@ function App() {
                   </div>
 
                   {/* Contract & Chart */}
-                  <div className="px-6 pb-6 space-y-6">
-                    <div className="bg-black/40 p-4 rounded-lg border border-white/5 flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <i className="fas fa-file-code text-slate-500"></i>
+                  <div className="px-8 pb-6 space-y-6">
+                    <div className="glass-card bg-black/40 backdrop-blur-md p-5 rounded-xl border border-white/10 hover:border-cyan-500/30 flex justify-between items-center transition-all">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-lg flex items-center justify-center">
+                          <i className="fas fa-file-code text-cyan-400"></i>
+                        </div>
                         <span className="font-mono text-sm text-slate-300 truncate max-w-xs">{analysisResult.contractAddress}</span>
                       </div>
-                      <button onClick={() => copyToClipboard(analysisResult.contractAddress)} className="text-emerald-500 hover:text-emerald-400 font-bold uppercase text-xs">Copy CA</button>
+                      <button onClick={() => copyToClipboard(analysisResult.contractAddress)} className="btn-glow bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 font-bold uppercase text-xs px-4 py-2 rounded-lg transition-all">
+                        <i className="fas fa-copy mr-2"></i>Copy CA
+                      </button>
                     </div>
-                    <div className="bg-black/20 rounded-xl border border-white/5 p-4">
+                    <div className="chart-container glass-card bg-black/30 backdrop-blur-md rounded-2xl border border-white/10 p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-xs font-black text-slate-400 uppercase flex items-center gap-2">
+                          <i className="fas fa-chart-area text-emerald-500"></i>
+                          Price History
+                        </h4>
+                        <div className="flex gap-2">
+                          <span className="text-xs text-slate-500 bg-black/40 px-3 py-1 rounded-lg">24H</span>
+                        </div>
+                      </div>
                       <div className="h-60 relative">
                         <canvas ref={chartRef} />
                       </div>
@@ -809,22 +874,31 @@ function App() {
                   </div>
 
                   {/* Action Links */}
-                  <div className="px-6 pb-8">
+                  <div className="px-8 pb-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {pairChain === 'solana' ? (
-                        <button className="bg-green-600 hover:bg-green-500 text-black font-black py-3 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all">
+                        <button 
+                          onClick={() => window.open(`https://jup.ag/swap/SOL-${analysisResult.contractAddress}`, '_blank')}
+                          className="btn-glow glow-on-hover glass-card bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-black py-4 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-green-500/30 border border-green-500/20"
+                        >
                           <i className="fas fa-bolt"></i> Buy Jupiter
                         </button>
                       ) : (
-                        <button className="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all">
-                          <i className="fas fa-exchange-alt"></i> Trade
+                        <button 
+                          onClick={() => {
+                            const uniswapUrl = `https://app.uniswap.org/#/swap?outputCurrency=${analysisResult.contractAddress}`;
+                            window.open(uniswapUrl, '_blank');
+                          }}
+                          className="btn-glow glow-on-hover glass-card bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-black py-4 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30 border border-blue-500/20"
+                        >
+                          <i className="fas fa-exchange-alt"></i> Trade Uniswap
                         </button>
                       )}
 
                       <button
                         onClick={checkHoneypot}
                         disabled={isCheckingHoneypot || !analysisResult?.contractAddress}
-                        className={`bg-orange-600 hover:bg-orange-500 text-white font-black py-3 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all ${isCheckingHoneypot ? 'opacity-50 cursor-wait' : ''
+                        className={`btn-glow glow-on-hover glass-card bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black py-4 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-orange-500/30 border border-orange-500/20 ${isCheckingHoneypot ? 'opacity-50 cursor-wait' : ''
                           }`}
                       >
                         <i className={`fas ${isCheckingHoneypot ? 'fa-spinner fa-spin' : 'fa-vial'}`}></i>
@@ -835,7 +909,7 @@ function App() {
                         <button
                           onClick={checkHoneypot}
                           disabled={isCheckingHoneypot || !analysisResult?.contractAddress}
-                          className={`bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all ${isCheckingHoneypot ? 'opacity-50 cursor-wait' : ''
+                          className={`btn-glow glow-on-hover glass-card bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black py-4 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-500/30 border border-red-500/20 ${isCheckingHoneypot ? 'opacity-50 cursor-wait' : ''
                             }`}
                         >
                           <i className={`fas ${isCheckingHoneypot ? 'fa-spinner fa-spin' : 'fa-skull'}`}></i>
@@ -843,7 +917,13 @@ function App() {
                         </button>
                       )}
 
-                      <button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-3 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all">
+                      <button 
+                        onClick={() => {
+                          const chain = pairChain === 'solana' ? 'solana' : pairChain === 'base' ? 'base' : pairChain === 'bsc' ? 'bsc' : 'ethereum';
+                          window.open(`https://dexscreener.com/${chain}/${analysisResult.contractAddress}`, '_blank');
+                        }}
+                        className="btn-glow glow-on-hover glass-card bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-4 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/30 border border-emerald-500/20"
+                      >
                         <i className="fas fa-external-link-alt"></i> DexScreener
                       </button>
                     </div>
@@ -851,27 +931,27 @@ function App() {
 
                   {/* Honeypot Result Display */}
                   {honeypotStatus && (
-                    <div className={`mx-6 mb-6 p-4 rounded-xl border ${honeypotStatus.isHoneypot ? 'bg-red-900/20 border-red-500/30' : 'bg-green-900/20 border-green-500/30'}`}>
-                      <div className="flex items-start gap-3">
-                        <i className={`fas ${honeypotStatus.isHoneypot ? 'fa-exclamation-triangle text-red-500' : 'fa-check-circle text-green-500'} text-xl`}></i>
-                        <div>
-                          <h4 className={`font-black text-sm uppercase ${honeypotStatus.isHoneypot ? 'text-red-400' : 'text-green-400'}`}>
-                            {honeypotStatus.isHoneypot ? 'DANGER DETECTED' : 'SAFETY CHECK PASSED'}
+                    <div className={`mx-8 mb-6 glass-card backdrop-blur-xl p-5 rounded-2xl border-2 ${honeypotStatus.isHoneypot ? 'bg-red-900/20 border-red-500/40 shadow-lg shadow-red-500/20' : 'bg-green-900/20 border-green-500/40 shadow-lg shadow-green-500/20'} animate-fadeIn`}>
+                      <div className="flex items-start gap-4">
+                        <i className={`fas ${honeypotStatus.isHoneypot ? 'fa-exclamation-triangle text-red-400' : 'fa-check-circle text-green-400'} text-2xl`}></i>
+                        <div className="flex-1">
+                          <h4 className={`font-black text-base uppercase ${honeypotStatus.isHoneypot ? 'text-red-400' : 'text-green-400'} mb-2`}>
+                            {honeypotStatus.isHoneypot ? '⚠️ DANGER DETECTED' : '✓ SAFETY CHECK PASSED'}
                           </h4>
-                          <p className="text-xs text-slate-300 mt-1">{honeypotStatus.details}</p>
+                          <p className="text-sm text-slate-300 leading-relaxed">{honeypotStatus.details}</p>
                         </div>
                       </div>
                     </div>
                   )}
 
                   {/* Bottom Actions */}
-                  <div className="px-6 pb-6 border-t border-white/10 pt-6">
+                  <div className="px-8 pb-8 border-t border-white/5 pt-6">
                     <div className="flex gap-4">
-                      <button onClick={savePosition} className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-black font-black py-4 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all shadow-lg">
+                      <button onClick={savePosition} className="btn-glow glow-on-hover flex-1 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-black py-4 rounded-xl uppercase text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/50">
                         <i className="fas fa-wallet"></i> Save to Portfolio
                       </button>
-                      <button onClick={() => setShowVerdict(false)} className="px-8 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-4 rounded-xl uppercase text-xs transition-all">
-                        Dismiss
+                      <button onClick={() => setShowVerdict(false)} className="px-8 glass-card bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-bold py-4 rounded-xl uppercase text-xs transition-all">
+                        Close
                       </button>
                     </div>
                   </div>
@@ -881,10 +961,13 @@ function App() {
           </div>
         </section>
 
-        <aside className="w-80 bg-[#080d17] border-l border-white/5 p-6 hidden xl:block overflow-y-auto">
+        <aside className="w-80 bg-gradient-to-b from-slate-950 to-slate-900 border-l border-white/5 p-6 hidden xl:block overflow-y-auto custom-scrollbar">
           <div className="flex justify-between items-center mb-6">
-            <div className="text-xs uppercase font-black text-slate-500">Audited Portfolio</div>
-            <span className="bg-emerald-500/20 text-emerald-500 text-[10px] px-2 py-0.5 rounded-full font-bold">{portfolio.length} ACTIVE</span>
+            <div className="flex items-center gap-2">
+              <i className="fas fa-briefcase text-emerald-500"></i>
+              <div className="text-xs uppercase font-black text-slate-400">Audited Portfolio</div>
+            </div>
+            <span className="bg-emerald-500/20 text-emerald-400 text-[10px] px-3 py-1 rounded-full font-bold border border-emerald-500/30">{portfolio.length} ACTIVE</span>
           </div>
 
           <div className="space-y-3">
@@ -896,37 +979,41 @@ function App() {
               const entryNum = !isManual ? parseFloat(entryRaw) : null;
               const pnl = currPrice && entryNum ? ((currPrice / entryNum - 1) * 100).toFixed(2) : null;
               return (
-                <div key={p.id} className="bg-white/5 border border-white/10 hover:border-emerald-500/30 rounded-xl p-4 transition-colors group relative">
-                  <button onClick={() => deletePosition(p.id)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 transition-opacity">
-                    <i className="fas fa-times-circle"></i>
+                <div key={p.id} className="portfolio-card coin-slide glass-card bg-white/5 backdrop-blur-md border border-white/10 hover:border-emerald-500/30 rounded-xl p-4 transition-all group relative shadow-lg">
+                  <button onClick={() => deletePosition(p.id)} className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 transition-all z-10">
+                    <i className="fas fa-times-circle text-lg"></i>
                   </button>
-                  <div className="font-black text-white text-lg tracking-tight">${p.token}</div>
-                  <div className="mt-3 space-y-1 text-xs">
-                    <div className="flex justify-between text-slate-400">
-                      <span>Entry</span>
-                      <span className="font-mono text-white">{isManual ? 'Manual' : formatPrice(entryNum)}</span>
+                  <div className="font-black text-white text-lg tracking-tight mb-3">${p.token}</div>
+                  <div className="space-y-2 text-xs">
+                    <div className="flex justify-between items-center bg-black/30 p-2 rounded-lg">
+                      <span className="text-slate-400">Entry</span>
+                      <span className="font-mono text-emerald-400 font-bold">{isManual ? 'Manual' : formatPrice(entryNum)}</span>
                     </div>
-                    <div className="flex justify-between text-slate-400">
-                      <span>Current</span>
-                      <span className="font-mono text-white">{formatPrice(currPrice)}</span>
+                    <div className="flex justify-between items-center bg-black/30 p-2 rounded-lg">
+                      <span className="text-slate-400">Current</span>
+                      <span className="font-mono text-cyan-400 font-bold">{formatPrice(currPrice)}</span>
                     </div>
                     {pnl !== null && (
-                      <div className="flex justify-between">
-                        <span>PNL</span>
-                        <span className={`font-bold ${parseFloat(pnl) > 0 ? 'text-green-500' : 'text-red-500'}`}>{pnl}%</span>
+                      <div className={`flex justify-between items-center p-2 rounded-lg ${parseFloat(pnl) > 0 ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-rose-500/10 border border-rose-500/30'}`}>
+                        <span className="font-bold">PNL</span>
+                        <span className={`font-black text-sm ${parseFloat(pnl) > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                          {parseFloat(pnl) > 0 ? '↑' : '↓'} {pnl}%
+                        </span>
                       </div>
                     )}
-                    <div className="flex justify-between">
-                      <span>Risk</span>
-                      <span className={`font-bold ${p.risk === 'LOW' ? 'text-emerald-500' : 'text-rose-400'}`}>{p.risk}</span>
+                    <div className={`flex justify-between items-center p-2 rounded-lg ${p.risk === 'LOW' ? 'bg-emerald-500/10 border border-emerald-500/30' : 'bg-rose-500/10 border border-rose-500/30'}`}>
+                      <span className="font-bold">Risk</span>
+                      <span className={`font-black text-xs ${p.risk === 'LOW' ? 'text-emerald-400' : 'text-rose-400'}`}>{p.risk}</span>
                     </div>
                   </div>
                 </div>
               );
             })}
             {portfolio.length === 0 && (
-              <div className="text-center py-10 border-2 border-dashed border-white/5 rounded-xl text-slate-600 text-xs uppercase italic">
-                No active positions<br />Audit to begin tracking
+              <div className="glass-card text-center py-12 border-2 border-dashed border-white/5 rounded-2xl bg-black/20 backdrop-blur-md">
+                <i className="fas fa-folder-open text-4xl text-slate-700 mb-3"></i>
+                <p className="text-slate-600 text-xs uppercase italic font-bold">No active positions</p>
+                <p className="text-slate-700 text-[10px] mt-1">Audit tokens to begin tracking</p>
               </div>
             )}
           </div>
