@@ -800,37 +800,46 @@ const tickerInt = setInterval(fetchTickers, 60000);
       <div className="overflow-y-auto custom-scrollbar flex-1 overscroll-contain h-full">
         {/* Header */}
         <div className="p-4 md:p-6 lg:p-8 border-b border-white/10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-cyan-500/5 to-emerald-500/5 animated-gradient-border opacity-50"></div>
-          
-          {/* Close button inside the header so it's always accessible */}
-          <button 
-            onClick={() => setShowVerdict(false)} 
-            className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-rose-500/20 text-white transition-all border border-white/10"
-          >
-            <i className="fas fa-times"></i>
-          </button>
+  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-cyan-500/5 to-emerald-500/5 animated-gradient-border opacity-50"></div>
+  
+  <button 
+    onClick={() => setShowVerdict(false)} 
+    className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-rose-500/20 text-white transition-all border border-white/10"
+  >
+    <i className="fas fa-times"></i>
+  </button>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-4 relative z-10">
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] md:text-xs text-emerald-400 font-black uppercase tracking-widest flex items-center gap-2">
-                <i className="fas fa-shield-alt"></i> Forensic Verdict
-              </span>
-              <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black italic mt-2 md:mt-3 leading-tight break-words ${analysisResult.riskLevel === 'LOW' ? 'text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'text-rose-500' : 'text-amber-400'}`}>
-                {analysisResult.verdict}
-              </h2>
-              <div className="text-xs md:text-sm uppercase font-bold text-slate-400 mt-2 flex flex-wrap items-center gap-2 md:gap-3">
-                <span className={`px-2 md:px-3 py-1 rounded-lg ${analysisResult.riskLevel === 'LOW' ? 'bg-emerald-500/20 text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                  Risk: {analysisResult.riskLevel}
-                </span>
-                <span className="bg-white/5 px-2 md:px-3 py-1 rounded-lg">Confidence: {analysisResult.confidence}%</span>
-              </div>
-            </div>
-            <div className="glass-card bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-xl border border-white/10 flex-shrink-0">
-              <span className="text-[10px] md:text-xs text-slate-400 uppercase font-bold tracking-widest block">Social Vibe</span>
-              <span className="text-lg md:text-2xl font-black text-white mt-1 block">{analysisResult.socialSentiment?.vibe || 'Neutral'}</span>
-            </div>
-          </div>
-        </div>
+  {/* FIXED LINE: Added w-full and changed sm:flex-row to md:flex-row for better desktop spacing */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 w-full">
+    
+    {/* FIXED CONTAINER: Added md:max-w-[70%] to stop text from stretching too wide */}
+    <div className="flex-1 min-w-0 md:max-w-[70%]">
+      <span className="text-[10px] md:text-xs text-emerald-400 font-black uppercase tracking-widest flex items-center gap-2">
+        <i className="fas fa-shield-alt"></i> Forensic Verdict
+      </span>
+      
+      {/* FIXED TEXT: Added md:text-4xl to cap the size so it doesn't look "blown out" */}
+      <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black italic mt-2 md:mt-3 leading-tight break-words ${analysisResult.riskLevel === 'LOW' ? 'text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'text-rose-500' : 'text-amber-400'}`}>
+        {analysisResult.verdict}
+      </h2>
+
+      <div className="text-xs md:text-sm uppercase font-bold text-slate-400 mt-2 flex flex-wrap items-center gap-2 md:gap-3">
+        <span className={`px-2 md:px-3 py-1 rounded-lg ${analysisResult.riskLevel === 'LOW' ? 'bg-emerald-500/20 text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}`}>
+          Risk: {analysisResult.riskLevel}
+        </span>
+        <span className="bg-white/5 px-2 md:px-3 py-1 rounded-lg">Confidence: {analysisResult.confidence}%</span>
+      </div>
+    </div>
+
+    {/* FIXED CARD: Added md:w-auto and flex-shrink-0 so it doesn't stretch or squash */}
+    <div className="glass-card bg-white/5 backdrop-blur-md p-3 md:p-5 rounded-xl border border-white/10 flex-shrink-0 w-full md:w-auto self-stretch md:self-auto">
+      <span className="text-[10px] md:text-xs text-slate-400 uppercase font-bold tracking-widest block">Social Vibe</span>
+      <span className="text-lg md:text-2xl font-black text-white mt-1 block">
+        {analysisResult.socialSentiment?.vibe || 'Neutral'}
+      </span>
+    </div>
+  </div>
+</div>
                   {/* Body */}
                   <div className="p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                     <div className="space-y-3 md:space-y-4">
