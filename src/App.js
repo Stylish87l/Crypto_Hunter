@@ -799,37 +799,53 @@ const tickerInt = setInterval(fetchTickers, 60000);
       {/* Added 'overscroll-contain' and 'h-full' to make desktop scrolling smooth */}
       <div className="overflow-y-auto custom-scrollbar flex-1 overscroll-contain h-full">
         {/* Header */}
-       <div className="p-4 md:p-6 lg:p-8 border-b border-white/10 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-cyan-500/5 to-emerald-500/5 animated-gradient-border opacity-50"></div>
+      <div className="p-6 md:p-8 lg:p-10 border-b border-white/10 bg-slate-900/40 relative overflow-hidden">
+  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-cyan-500/5 opacity-40"></div>
   
   <button 
     onClick={() => setShowVerdict(false)} 
-    className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-rose-500/20 text-white transition-all border border-white/10"
+    className="absolute top-6 right-6 z-30 w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-rose-500/20 text-white transition-all border border-white/10"
   >
     <i className="fas fa-times"></i>
   </button>
 
-  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10 w-full">
-    <div className="flex-1 min-w-0 md:max-w-[60%]">
-      <span className="text-[10px] md:text-xs text-emerald-400 font-black uppercase tracking-widest flex items-center gap-2">
-        <i className="fas fa-shield-alt"></i> Forensic Verdict
-      </span>
-      <h2 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black italic mt-2 md:mt-3 leading-tight whitespace-nowrap ${analysisResult.riskLevel === 'LOW' ? 'text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'text-rose-500' : 'text-amber-400'}`}>
+  {/* Changed from flex to grid to force columns */}
+  <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full">
+    
+    {/* Left Section: Verdict Title (Spans 2 columns on desktop) */}
+    <div className="lg:col-span-2 min-w-0">
+      <div className="flex items-center gap-2 text-emerald-400 mb-4">
+        <i className="fas fa-shield-alt text-xs"></i>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Forensic Verdict</span>
+      </div>
+      
+      {/* Title Fix: Uses flex-wrap to ensure "STRONG BUY" or "WATCH" stay horizontal */}
+      <h2 className={`text-3xl md:text-5xl lg:text-7xl font-black italic uppercase leading-none tracking-tighter flex flex-wrap gap-x-4 ${analysisResult.riskLevel === 'LOW' ? 'text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'text-rose-500' : 'text-amber-400'}`}>
         {analysisResult.verdict}
       </h2>
-      <div className="text-xs md:text-sm uppercase font-bold text-slate-400 mt-2 flex flex-wrap items-center gap-2 md:gap-3">
-        <span className={`px-2 md:px-3 py-1 rounded-lg ${analysisResult.riskLevel === 'LOW' ? 'bg-emerald-500/20 text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}`}>
+
+      {/* Badges Row */}
+      <div className="flex flex-wrap items-center gap-3 mt-8">
+        <div className={`px-4 py-2 rounded-lg font-bold uppercase text-[10px] tracking-widest border ${analysisResult.riskLevel === 'LOW' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : analysisResult.riskLevel === 'CRITICAL' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-amber-500/10 border-amber-500/20 text-amber-400'}`}>
           Risk: {analysisResult.riskLevel}
-        </span>
-        <span className="bg-white/5 px-2 md:px-3 py-1 rounded-lg">Confidence: {analysisResult.confidence}%</span>
+        </div>
+        <div className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+          Confidence: {analysisResult.confidence}%
+        </div>
       </div>
     </div>
 
-    <div className="glass-card bg-white/5 backdrop-blur-md p-4 md:p-6 rounded-xl border border-white/10 flex-shrink-0 w-full md:w-80 self-stretch md:self-auto">
-      <span className="text-[10px] md:text-xs text-slate-400 uppercase font-bold tracking-widest block">Social Vibe</span>
-      <p className="text-sm md:text-base text-white mt-2 leading-relaxed opacity-90 font-medium">
-        {analysisResult.socialSentiment?.vibe || 'Neutral'}
-      </p>
+    {/* Right Section: Social Vibe Card (Occupies 1 column) */}
+    <div className="lg:col-span-1 w-full">
+      <div className="glass-card bg-slate-800/40 backdrop-blur-xl p-6 rounded-2xl border border-white/10 shadow-2xl">
+        <div className="flex items-center gap-2 text-slate-400 mb-4">
+          <i className="fas fa-satellite-dish text-xs"></i>
+          <span className="text-[10px] font-bold uppercase tracking-widest">Social Vibe</span>
+        </div>
+        <p className="text-sm md:text-base text-slate-200 leading-relaxed font-medium">
+          {analysisResult.socialSentiment?.vibe || 'Sentiment analysis in progress...'}
+        </p>
+      </div>
     </div>
   </div>
 </div>
