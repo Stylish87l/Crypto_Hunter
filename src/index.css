@@ -119,10 +119,13 @@ body.modal-open {
   overscroll-behavior: contain; 
   -webkit-overflow-scrolling: touch;
 
-  width: 95%;           /* Prevents touching the sides of the screen */
-  max-width: 900px;     /* Keeps the content compact and readable on desktop */
-  margin: 0 auto;       /* Centers the modal on the screen */
+  /* THE CRITICAL FIXES FOR YOUR SCREENSHOT ISSUE */
+  width: 95%;           
+  max-width: 1100px;    /* Increased slightly to give "WATCH" room to breathe */
+  margin: auto;         
+  min-height: 400px;    /* Ensures the card doesn't squash the header */
 }
+
 @media (max-width: 640px) {
   .glass-verdict {
     background: rgba(15, 23, 42, 0.98);
