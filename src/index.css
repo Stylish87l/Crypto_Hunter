@@ -16,6 +16,41 @@
   background: #444;
 }
 
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  /* Fix iOS scroll bounce */
+  body {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* Enable smooth scrolling on mobile */
+  .custom-scrollbar {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: scroll;
+  }
+  
+  /* Prevent zoom on input focus */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Fix modal scrolling on mobile */
+  .glass-verdict {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
 /* Marquee Animation */
 @keyframes marquee {
   0% {
@@ -58,7 +93,7 @@
 
 /* Glassmorphic Verdict Card with Glow */
 .glass-verdict {
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 2px solid rgba(16, 185, 129, 0.15);
@@ -69,6 +104,18 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  
+  /* Mobile optimizations */
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .glass-verdict {
+    background: rgba(15, 23, 42, 0.98);
+    border-radius: 0 !important;
+    max-height: 100vh !important;
+  }
 }
 
 .glass-verdict::before {
@@ -106,6 +153,13 @@
     0 20px 80px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
+}
+
+/* Disable hover effects on mobile */
+@media (max-width: 768px) {
+  .glass-verdict:hover {
+    transform: none;
+  }
 }
 
 /* Glow on Touch/Hover for Interactive Elements */
