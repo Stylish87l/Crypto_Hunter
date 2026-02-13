@@ -47,8 +47,15 @@
 /* Prevent body scroll when modal is open */
 body.modal-open {
   overflow: hidden;
-  position: fixed;
-  width: 100%;
+  /* Removed position: fixed from here to fix desktop freezing */
+}
+
+/* Keep the fixed position ONLY for mobile devices */
+@media (max-width: 768px) {
+  body.modal-open {
+    position: fixed;
+    width: 100%;
+  }
 }
 
 /* Marquee Animation - Updated for triple copies */
@@ -105,10 +112,11 @@ body.modal-open {
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
   
-  /* Mobile optimizations */
-  overscroll-behavior-y: contain;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important; /* Force the outer shell to stay fixed */
+  overscroll-behavior: contain; /* Prevents scroll chaining to the background */
   -webkit-overflow-scrolling: touch;
 }
 
@@ -434,23 +442,23 @@ body.modal-open {
 }
 
 /* Scrollbar Enhancement for Verdict Card */
-.glass-verdict::-webkit-scrollbar {
-  width: 8px;
+.glass-verdict .custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Slightly wider for better desktop visibility */
 }
 
-.glass-verdict::-webkit-scrollbar-track {
+.glass-verdict .custom-scrollbar::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
-.glass-verdict::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.3);
+.glass-verdict .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.4); /* Brighter emerald for visibility */
   border-radius: 4px;
   transition: background 0.3s ease;
 }
 
-.glass-verdict::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.5);
+.glass-verdict .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
 }
 
 /* Portfolio Card Enhancement */
