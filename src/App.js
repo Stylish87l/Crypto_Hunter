@@ -123,31 +123,51 @@ function App() {
     initAuth();
     const unsubAuth = onAuthStateChanged(auth, setUser);
 
-    // --- TICKER ---
-    const fetchTickers = async () => {
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple,cardano,dogecoin,polkadot,matic-network,chainlink,uniswap,avalanche-2,wrapped-bitcoin&vs_currencies=usd&include_24hr_change=true');
-        if (!res.ok) throw new Error('Network response was not ok');
-        const data = await res.json();
-        setTickers([
-          { symbol: 'BTC', price: data.bitcoin.usd.toLocaleString(), change: (data.bitcoin.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'ETH', price: data.ethereum.usd.toLocaleString(), change: (data.ethereum.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'SOL', price: data.solana.usd.toLocaleString(), change: (data.solana.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'BNB', price: data.binancecoin.usd.toLocaleString(), change: (data.binancecoin.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'XRP', price: data.ripple.usd.toLocaleString(), change: (data.ripple.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'ADA', price: data.cardano.usd.toLocaleString(), change: (data.cardano.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'DOGE', price: data.dogecoin.usd.toLocaleString(), change: (data.dogecoin.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'DOT', price: data.polkadot.usd.toLocaleString(), change: (data.polkadot.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'MATIC', price: data['matic-network'].usd.toLocaleString(), change: (data['matic-network'].usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'LINK', price: data.chainlink.usd.toLocaleString(), change: (data.chainlink.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'UNI', price: data.uniswap.usd.toLocaleString(), change: (data.uniswap.usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'AVAX', price: data['avalanche-2'].usd.toLocaleString(), change: (data['avalanche-2'].usd_24h_change || 0).toFixed(2) + '%' },
-          { symbol: 'WBTC', price: data['wrapped-bitcoin'].usd.toLocaleString(), change: (data['wrapped-bitcoin'].usd_24h_change || 0).toFixed(2) + '%' }
-        ]);
-      } catch (e) { }
+   // --- TICKER ---
+const fetchTickers = async () => {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple,cardano,dogecoin,polkadot,matic-network,chainlink,uniswap,avalanche-2,wrapped-bitcoin&vs_currencies=usd&include_24hr_change=true');
+    
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    
+    const data = await res.json();
+
+    // Helper function to safely format the data for each coin
+    // This prevents one missing coin from crashing the whole list
+    const getCoinData = (id, symbol) => {
+      const coin = data[id];
+      return {
+        symbol: symbol,
+        price: coin?.usd ? coin.usd.toLocaleString() : '---',
+        change: (coin?.usd_24h_change ?? 0).toFixed(2) + '%'
+      };
     };
-    fetchTickers();
-    const tickerInt = setInterval(fetchTickers, 60000);
+
+    setTickers([
+      getCoinData('bitcoin', 'BTC'),
+      getCoinData('ethereum', 'ETH'),
+      getCoinData('solana', 'SOL'),
+      getCoinData('binancecoin', 'BNB'),
+      getCoinData('ripple', 'XRP'),
+      getCoinData('cardano', 'ADA'),
+      getCoinData('dogecoin', 'DOGE'),
+      getCoinData('polkadot', 'DOT'),
+      getCoinData('matic-network', 'MATIC'),
+      getCoinData('chainlink', 'LINK'),
+      getCoinData('uniswap', 'UNI'),
+      getCoinData('avalanche-2', 'AVAX'),
+      getCoinData('wrapped-bitcoin', 'WBTC')
+    ]);
+
+  } catch (e) {
+    console.error("Ticker fetch failed:", e);
+  }
+};
+
+// Initial fetch
+fetchTickers();
+// Set interval and store ID for potential cleanup
+const tickerInt = setInterval(fetchTickers, 60000);
 
     // --- MULTI-CHAIN ALERTS ---
     const fetchAlerts = async (type) => {
