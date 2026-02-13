@@ -51,18 +51,20 @@ body.modal-open {
   width: 100%;
 }
 
-/* Marquee Animation */
+/* Marquee Animation - Updated for triple copies */
 @keyframes marquee {
   0% {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(-33.333%);
   }
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 60s linear infinite;
+  display: inline-flex;
+  gap: 0;
 }
 
 /* Smooth Fade In */
