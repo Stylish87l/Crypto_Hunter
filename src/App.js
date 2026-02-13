@@ -705,7 +705,9 @@ const tickerInt = setInterval(fetchTickers, 60000);
                   <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${isPositive ? 'bg-emerald-500' : 'bg-rose-500'} shadow-lg`}></div>
                   <span className="text-[10px] md:text-xs font-black text-white tracking-tight">{t.symbol}</span>
                 </div>
-                <span className="text-xs md:text-sm font-mono text-emerald-400 font-bold">${t.price}</span>
+                <span className={`text-xs md:text-sm font-mono font-bold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+           ${t.price}
+           </span>
                 <span className={`text-[10px] md:text-xs font-bold px-1.5 md:px-2 py-0.5 rounded ${isPositive ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
                   {isPositive ? '↑' : '↓'} {t.change}
                 </span>
