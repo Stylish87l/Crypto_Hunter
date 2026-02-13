@@ -115,11 +115,14 @@ body.modal-open {
   
   display: flex;
   flex-direction: column;
-  overflow: hidden !important; /* Force the outer shell to stay fixed */
-  overscroll-behavior: contain; /* Prevents scroll chaining to the background */
+  overflow: hidden !important; 
+  overscroll-behavior: contain; 
   -webkit-overflow-scrolling: touch;
-}
 
+  width: 95%;           /* Prevents touching the sides of the screen */
+  max-width: 900px;     /* Keeps the content compact and readable on desktop */
+  margin: 0 auto;       /* Centers the modal on the screen */
+}
 @media (max-width: 640px) {
   .glass-verdict {
     background: rgba(15, 23, 42, 0.98);
