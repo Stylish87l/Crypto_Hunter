@@ -473,8 +473,14 @@ const tickerInt = setInterval(fetchTickers, 60000);
           }
 
           const data = await res.json();
-          if (!data.candidates?.[0]) throw new Error(data.error?.message || "API Error"); [cite: 70]
-
+          
+          if (!data.candidates || !data.candidates[0]) {
+            let errorMessage = "API Error";
+            if (data.error && data.error.message) {
+              errorMessage = data.error.message;
+            }
+            throw new Error(errorMessage);
+          }
           const rawText = data.candidates[0].content.parts[0].text;
           const jsonMatch = rawText.match(/\{[\s\S]*\}/);
           if (!jsonMatch) throw new Error("No JSON in response"); [cite: 71]
