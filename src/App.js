@@ -444,8 +444,7 @@ const tickerInt = setInterval(fetchTickers, 60000);
         "socialSentiment": { "vibe": "Bullish/Bearish", "communityScore": 0-100 },
         "targets": {"entry": "price", "exit": "price"},
         "contractAddress": "${input}"
-      }
-      `;[cite: 66]
+        }` + "";
 
       const fetchWithRetry = async (attempt = 0) => {
         try {
