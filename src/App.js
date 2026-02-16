@@ -467,7 +467,7 @@ const tickerInt = setInterval(fetchTickers, 60000);
 
           if (res.status === 429 && attempt < 5) {
             const delay = Math.pow(2, attempt) * 1000;
-            await new Promise(r => setTimeout(r, delay)); [cite: 69]
+            await new Promise(function(resolve) { setTimeout(resolve, delay); }); [cite: 69]
             return fetchWithRetry(attempt + 1);
           }
 
