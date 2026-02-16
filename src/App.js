@@ -381,12 +381,14 @@ const tickerInt = setInterval(fetchTickers, 60000);
   };
 
  // --- GEMINI AUDIT ---
-  const performAnalysis = async () => {
+ const performAnalysis = async () => {
+    // 1. Basic Validation
     if (!input || isAnalyzing || !apiKey) {
       if (!apiKey) setShowKeyModal(true);
       return;
     }
-    
+
+    // 2. State Reset
     setIsAnalyzing(true);
     setAnalysisResult(null);
     setTerminalLines(prev => [...prev.slice(-15), `> INITIATING FORENSIC SCAN: ${input.toUpperCase()}`]);
@@ -399,31 +401,36 @@ const tickerInt = setInterval(fetchTickers, 60000);
     setHolders(null);
     setVolumeChange5m(null);
 
-    // Outer try block for the main analysis logic [cite: 63]
     try {
-      // 1. Fetch REAL market data FIRST
+      // 3. Fetch Market Data (Refactored to remove ?.)
       let liveStats = "Market data currently unavailable via API.";
       try {
         const marketRes = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${input}`);
         const marketData = await marketRes.json();
-        const pair = marketData.pairs?.[0];
         
+        // FIX: Removed optional chaining (marketData.pairs?.[0]) to prevent build error
+        let pair = null;
+        if (marketData.pairs && marketData.pairs.length > 0) {
+            pair = marketData.pairs[0];
+        }
+
         if (pair) {
           liveStats = `
             PRICE: $${pair.priceUsd}
-            LIQUIDITY: $${pair.liquidity?.usd}
+            LIQUIDITY: $${pair.liquidity ? pair.liquidity.usd : 'N/A'}
             MARKET CAP (FDV): $${pair.fdv}
-            24H VOLUME: $${pair.volume?.h24}
+            24H VOLUME: $${(pair.volume && pair.volume.h24) ? pair.volume.h24 : 'N/A'}
             DEX: ${pair.dexId}
           `;
           setCurrentPrice(pair.priceUsd);
           setMarketCap(pair.fdv);
-          setLiquidity(pair.liquidity?.usd);
+          if (pair.liquidity) setLiquidity(pair.liquidity.usd);
         }
       } catch (e) {
         console.warn("DEX API failed, falling back to AI search only.");
       }
-        
+
+      // 4. Construct System Prompt (Safe Syntax)
       const systemPrompt = `You are a professional forensic cryptocurrency auditor. 
       Analyze this token/address: "${input}".
       
@@ -431,7 +438,7 @@ const tickerInt = setInterval(fetchTickers, 60000);
       ${liveStats}
       
       Your task:
-      1. Use Google Search to find community sentiment and developer history. [cite: 65]
+      1. Use Google Search to find community sentiment and developer history.
       2. Combine your search findings with the LIVE DATA provided above.
       3. Return ONLY a JSON object with this exact structure:
       {
@@ -444,8 +451,10 @@ const tickerInt = setInterval(fetchTickers, 60000);
         "socialSentiment": { "vibe": "Bullish/Bearish", "communityScore": 0-100 },
         "targets": {"entry": "price", "exit": "price"},
         "contractAddress": "${input}"
-        }` + "";
+      }
+      `; 
 
+      // 5. AI Fetch Logic (Refactored for Safety)
       const fetchWithRetry = async (attempt = 0) => {
         try {
           const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
@@ -455,7 +464,7 @@ const tickerInt = setInterval(fetchTickers, 60000);
               contents: [{ 
                 parts: [{ text: `${systemPrompt}\n\nUSER INPUT ADDRESS: ${input}` }] 
               }],
-              tools: [{ google_search: {} }], // [cite: 67]
+              tools: [{ google_search: {} }],
               safetySettings: [
                 { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
                 { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -465,15 +474,17 @@ const tickerInt = setInterval(fetchTickers, 60000);
             })
           });
 
+          // FIX: Variable approach for delay to prevent syntax error
           if (res.status === 429 && attempt < 5) {
             const delay = Math.pow(2, attempt) * 1000;
-            const waitForBackoff = (ms) => new Promise((res) => setTimeout(res, ms));
+            const waitForBackoff = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             await waitForBackoff(delay);
             return fetchWithRetry(attempt + 1);
           }
 
           const data = await res.json();
           
+          // FIX: Removed optional chaining and complex OR logic
           if (!data.candidates || !data.candidates[0]) {
             let errorMessage = "API Error";
             if (data.error && data.error.message) {
@@ -481,31 +492,36 @@ const tickerInt = setInterval(fetchTickers, 60000);
             }
             throw new Error(errorMessage);
           }
-          const rawText = data.candidates[0].content.parts[0].text;
+
+          // FIX: Broken down into steps to avoid "Type Cast" parser error
+          const firstCandidate = data.candidates[0];
+          const firstPart = firstCandidate.content.parts[0];
+          const rawText = firstPart.text;
+
           const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-          if (!jsonMatch) throw new Error("No JSON in response"); [cite: 71]
+          if (!jsonMatch) throw new Error("No JSON in response");
 
           const result = JSON.parse(jsonMatch[0]);
           setAnalysisResult(result);
           setShowVerdict(true);
-          setTerminalLines(prev => [...prev.slice(-15), `> AUDIT SUCCESSFUL: ${result.riskLevel} RISK`]); [cite: 72]
+          setTerminalLines(prev => [...prev.slice(-15), `> AUDIT SUCCESSFUL: ${result.riskLevel} RISK`]);
+
         } catch (e) {
           setTerminalLines(prev => [...prev.slice(-15), `> ERROR: ${e.message}`]);
         } finally {
-          setIsAnalyzing(false); // [cite: 73]
+          setIsAnalyzing(false);
         }
       };
 
-      // Trigger the analysis
       await fetchWithRetry();
 
     } catch (outerError) {
-      // FIX: Added the missing catch for the outer try block
       setTerminalLines(prev => [...prev.slice(-15), `> CRITICAL ERROR: ${outerError.message}`]);
       setIsAnalyzing(false);
     }
   };
 
+  
   // Honeypot Check
   const checkHoneypot = async () => {
     if (!analysisResult?.contractAddress || !pairChain || isCheckingHoneypot) return;
