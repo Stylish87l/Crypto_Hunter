@@ -398,64 +398,99 @@ const tickerInt = setInterval(fetchTickers, 60000);
     setHolders(null);
     setVolumeChange5m(null);
 
-    const systemPrompt = `You are a professional cryptocurrency auditor. Analyze: "${input}". 
-        Use Google Search to find real-time community sentiment and dev history.
-        IMPORTANT: You must return ONLY a JSON block. Do not write any conversational text.
-        
-        JSON Schema:
-        {
-          "riskLevel": "LOW | MEDIUM | HIGH | CRITICAL",
-          "verdict": "STRONG BUY | WATCH | AVOID",
-          "confidence": number,
-          "contractAddress": "string",
-          "devProfile": { "reputation": "string", "history": "string" },
-          "socialSentiment": { "vibe": "string", "platformHighs": "string" },
-          "findings": ["finding 1", "finding 2"],
-          "redFlags": ["flag 1"],
-          "targets": {"entry": "price", "exit": "price"}
-        }`;
-
-    const fetchWithRetry = async (attempt = 0) => {
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: input }] }],
-            systemInstruction: { parts: [{ text: systemPrompt }] },
-            tools: [{ google_search: {} }],
-            safetySettings: [
-              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-            ]
-          })
-        });
-
-        if (res.status === 429 && attempt < 5) {
-          const delay = Math.pow(2, attempt) * 1000;
-          await new Promise(r => setTimeout(r, delay));
-          return fetchWithRetry(attempt + 1);
-        }
-
-        const data = await res.json();
-        if (!data.candidates?.[0]) throw new Error(data.error?.message || "API Error");
-
-        const rawText = data.candidates[0].content.parts[0].text;
-        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("No JSON in response");
-
-        const result = JSON.parse(jsonMatch[0]);
-        setAnalysisResult(result);
-        setShowVerdict(true);
-        setTerminalLines(prev => [...prev.slice(-15), `> AUDIT SUCCESSFUL: ${result.riskLevel} RISK`]);
-      } catch (e) {
-        setTerminalLines(prev => [...prev.slice(-15), `> ERROR: ${e.message}`]);
-      } finally {
-        setIsAnalyzing(false);
+    try {
+    // 2. Fetch REAL market data FIRST (Fixes the "mismatched prices" issue)
+    let liveStats = "Market data currently unavailable via API.";
+    try {
+      const marketRes = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${input}`);
+      const marketData = await marketRes.json();
+      const pair = marketData.pairs?.[0];
+      
+      if (pair) {
+        liveStats = `
+          PRICE: $${pair.priceUsd}
+          LIQUIDITY: $${pair.liquidity?.usd}
+          MARKET CAP (FDV): $${pair.fdv}
+          24H VOLUME: $${pair.volume?.h24}
+          DEX: ${pair.dexId}
+        `;
+        // Sync the live card immediately
+        setCurrentPrice(pair.priceUsd);
+        setMarketCap(pair.fdv);
+        setLiquidity(pair.liquidity?.usd);
       }
-    };
+    } catch (e) {
+      console.warn("DEX API failed, falling back to AI search only.");
+    }
+      
+   const systemPrompt = `You are a professional forensic cryptocurrency auditor. 
+    Analyze this token/address: "${input}".
+    
+    CRITICAL LIVE DATA (USE THIS FOR PRICE/LIQUIDITY):
+    ${liveStats}
+    
+    Your task:
+    1. Use Google Search to find community sentiment and developer history.
+    2. Combine your search findings with the LIVE DATA provided above.
+    3. Return ONLY a JSON object with this exact structure:
+    {
+      "verdict": "e.g., STRONG BUY, AVOID, WATCH",
+      "riskLevel": "e.g., LOW, MEDIUM, CRITICAL",
+      "confidence": 0-100,
+      "findings": ["Finding 1", "Finding 2"],
+      "redFlags": ["Flag 1", "Flag 2"],
+      "devProfile": { "trustScore": 0-100, "history": "description" },
+      "socialSentiment": { "vibe": "Bullish/Bearish", "communityScore": 0-100 },
+       "targets": {"entry": "price", "exit": "price"},
+      "contractAddress": "${input}"
+    }`;
+
+          
+   const fetchWithRetry = async (attempt = 0) => {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ 
+          parts: [{ 
+            text: `${systemPrompt}\n\nUSER INPUT ADDRESS: ${input}` 
+          }] 
+        }],
+        // Fix: Ensure the tool property matches exactly for the 2.5 series
+        tools: [{ google_search: {} }],
+        safetySettings: [
+          { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+          { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+        ]
+      })
+    });
+
+    if (res.status === 429 && attempt < 5) {
+      const delay = Math.pow(2, attempt) * 1000;
+      await new Promise(r => setTimeout(r, delay));
+      return fetchWithRetry(attempt + 1);
+    }
+
+    const data = await res.json();
+    if (!data.candidates?.[0]) throw new Error(data.error?.message || "API Error");
+
+    const rawText = data.candidates[0].content.parts[0].text;
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON in response");
+
+    const result = JSON.parse(jsonMatch[0]);
+    setAnalysisResult(result);
+    setShowVerdict(true);
+    setTerminalLines(prev => [...prev.slice(-15), `> AUDIT SUCCESSFUL: ${result.riskLevel} RISK`]);
+  } catch (e) {
+    setTerminalLines(prev => [...prev.slice(-15), `> ERROR: ${e.message}`]);
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
 
     fetchWithRetry();
   };
